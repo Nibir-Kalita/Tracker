@@ -1,16 +1,24 @@
 {
   "name": "student-tracker",
   "version": "1.0.0",
-  "description": "Minimal Student Tracker with MERN Stack (Mobile PWA & 24/7 Server Ready)",
+  "description": "Minimal Neo-brutalist Student Tracker (MERN Stack with Mobile PWA & 24/7 Server)",
   "scripts": {
     "install:all": "npm --prefix server install && npm --prefix client install",
-    "build": "npm --prefix client install && npm --prefix client run build",
+    "build": "npm --prefix client run build",
     "start": "NODE_ENV=production node server/server.js",
     "server": "npm --prefix server run dev",
-    "client": "npm --prefix client run dev",
-    "dev": "npm run server"
+    "client": "npm --prefix client run dev -- --host 0.0.0.0",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"magenta,cyan\" \"npm run server\" \"npm run client\""
   },
-  "keywords": ["mern", "student-tracker", "pwa", "productivity"],
+  "keywords": [
+    "mern",
+    "student-tracker",
+    "neobrutalism",
+    "pwa"
+  ],
   "author": "Nibir Kalita",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
 }

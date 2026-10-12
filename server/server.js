@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-require('dotenv').config(); // also check current working dir
+require('dotenv').config({ path: path.join(__dirname, '../.env'), override: true });
+require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/tasks');
