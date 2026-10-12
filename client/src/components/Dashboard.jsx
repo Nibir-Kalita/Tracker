@@ -29,90 +29,96 @@ export default function Dashboard() {
 
   const greeting = () => {
     const h = new Date().getHours();
-    if (h < 12) return 'Good morning';
-    if (h < 17) return 'Good afternoon';
-    return 'Good evening';
+    if (h < 12) return 'Good Morning';
+    if (h < 17) return 'Good Afternoon';
+    return 'Good Evening';
   };
 
   return (
-    <div className="dashboard">
-      {/* Header */}
-      <header className="dash-header">
-        <div className="dash-user">
-          <div className="dash-avatar">
+    <div className="neo-dash-container">
+      {/* Top Header Card */}
+      <header className="neo-dash-header">
+        <div className="neo-header-user">
+          <div className="neo-avatar">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
-          <div>
-            <span className="dash-greeting">{greeting()}</span>
-            <h2 className="dash-name">{user?.name}</h2>
+          <div className="neo-user-meta">
+            <span className="neo-greeting font-mono">{greeting()},</span>
+            <h2 className="neo-username">{user?.name}</h2>
           </div>
         </div>
-        <button className="dash-logout" onClick={logout} aria-label="Logout">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-            <polyline points="16 17 21 12 16 7"/>
-            <line x1="21" y1="12" x2="9" y2="12"/>
-          </svg>
-        </button>
+
+        <div className="neo-header-actions">
+          <div className="neo-status-pill font-mono">
+            <span className="neo-live-indicator"></span> 24/7 SYNC
+          </div>
+          <button className="neo-logout-btn" onClick={logout} aria-label="Logout" title="Logout">
+            <span className="font-mono">LOGOUT</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
       </header>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="dash-tabs">
-        <button
-          className={`dash-tab ${activeTab === 'tasks' ? 'active' : ''}`}
-          onClick={() => setActiveTab('tasks')}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M9 11l3 3L22 4"/>
-            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-          </svg>
-          <span>Tasks</span>
-        </button>
-        <button
-          className={`dash-tab ${activeTab === 'calendar' ? 'active' : ''}`}
-          onClick={() => setActiveTab('calendar')}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
-          </svg>
-          <span>Calendar</span>
-        </button>
-        <button
-          className={`dash-tab ${activeTab === 'progress' ? 'active' : ''}`}
-          onClick={() => setActiveTab('progress')}
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M18 20V10M12 20V4M6 20v-6"/>
-          </svg>
-          <span>Progress</span>
-        </button>
-      </nav>
+      {/* Hero Banner (like Reference 2: "Save now. Find anytime.") */}
+      <div className="neo-banner">
+        <div className="neo-banner-left">
+          <span className="neo-banner-badge font-mono">DAILY FOCUS</span>
+          <h1 className="neo-banner-heading">Track tasks. Stay ahead.</h1>
+        </div>
+        <div className="neo-banner-right">
+          <div className="neo-quick-stat font-mono">
+            <span className="neo-quick-val">{tasks.filter(t => !t.completed).length}</span>
+            <span className="neo-quick-label">DUE TODAY</span>
+          </div>
+        </div>
+      </div>
 
-      {/* Content */}
-      <main className="dash-content">
-        {/* Desktop: show all panels. Mobile: show active tab */}
-        <div className={`dash-panel dash-panel-calendar ${activeTab === 'calendar' || activeTab === 'tasks' ? 'show-mobile' : ''}`}>
+      {/* Main Grid Content */}
+      <main className="neo-dash-content">
+        {/* Calendar Panel */}
+        <div className={`neo-panel neo-panel-calendar ${activeTab === 'calendar' ? 'mobile-visible' : ''}`}>
           <Calendar tasks={tasks} selectedDate={selectedDate} onDateSelect={setSelectedDate} />
         </div>
 
-        <div className={`dash-panel dash-panel-tasks ${activeTab === 'tasks' ? 'show-mobile' : ''}`}>
+        {/* Tasks Panel */}
+        <div className={`neo-panel neo-panel-tasks ${activeTab === 'tasks' ? 'mobile-visible' : ''}`}>
           <TaskList tasks={tasks} selectedDate={selectedDate} onRefresh={loadTasks} />
         </div>
 
-        <div className={`dash-panel dash-panel-progress ${activeTab === 'progress' ? 'show-mobile' : ''}`}>
+        {/* Progress Panel */}
+        <div className={`neo-panel neo-panel-progress ${activeTab === 'progress' ? 'mobile-visible' : ''}`}>
           <Progress />
         </div>
       </main>
 
-      {/* SVG gradient def for progress circle */}
-      <svg width="0" height="0" style={{ position: 'absolute' }}>
-        <defs>
-          <linearGradient id="prog-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--accent)" />
-            <stop offset="100%" stopColor="var(--purple)" />
-          </linearGradient>
-        </defs>
-      </svg>
+      {/* Mobile Floating Bottom Navigation Dock */}
+      <nav className="neo-bottom-nav">
+        <button
+          className={`neo-nav-item ${activeTab === 'tasks' ? 'active' : ''}`}
+          onClick={() => setActiveTab('tasks')}
+        >
+          <span className="neo-nav-icon">📋</span>
+          <span className="neo-nav-text">Tasks</span>
+        </button>
+        <button
+          className={`neo-nav-item ${activeTab === 'calendar' ? 'active' : ''}`}
+          onClick={() => setActiveTab('calendar')}
+        >
+          <span className="neo-nav-icon">📅</span>
+          <span className="neo-nav-text">Calendar</span>
+        </button>
+        <button
+          className={`neo-nav-item ${activeTab === 'progress' ? 'active' : ''}`}
+          onClick={() => setActiveTab('progress')}
+        >
+          <span className="neo-nav-icon">⚡</span>
+          <span className="neo-nav-text">Progress</span>
+        </button>
+      </nav>
     </div>
   );
 }

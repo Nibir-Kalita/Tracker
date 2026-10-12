@@ -20,14 +20,19 @@ export default function TaskList({ tasks, selectedDate, onRefresh }) {
     if (!title.trim()) return;
     setLoading(true);
     try {
-      await createTask({ title: title.trim(), description: description.trim(), date: selectedDate, priority });
+      await createTask({
+        title: title.trim(),
+        description: description.trim(),
+        date: selectedDate,
+        priority
+      });
       setTitle('');
       setDescription('');
       setPriority('medium');
       setShowForm(false);
       onRefresh();
     } catch {
-      // handled by interceptor
+      // handled
     } finally {
       setLoading(false);
     }
@@ -53,106 +58,138 @@ export default function TaskList({ tasks, selectedDate, onRefresh }) {
 
   const formatDate = (dateStr) => {
     const d = new Date(dateStr);
-    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   };
 
-  const priorityIcon = (p) => {
-    switch (p) {
-      case 'high': return '🔴';
-      case 'medium': return '🟡';
-      case 'low': return '🟢';
-      default: return '🟡';
-    }
+  const priorityColors = {
+    high: 'badge-high',
+    medium: 'badge-medium',
+    low: 'badge-low'
   };
 
   return (
-    <div className="tasklist">
-      <div className="tl-header">
-        <div>
-          <h3>Tasks</h3>
-          <span className="tl-date">{formatDate(selectedDate)}</span>
+    <div className="neo-card neo-tasklist-card">
+      {/* Window Header */}
+      <div className="neo-card-header neo-tasks-header">
+        <div className="neo-window-dots">
+          <span className="neo-dot neo-dot-red"></span>
+          <span className="neo-dot neo-dot-yellow"></span>
+          <span className="neo-dot neo-dot-green"></span>
         </div>
-        <button className="tl-add-btn" onClick={() => setShowForm(!showForm)}>
-          {showForm ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          )}
+        <span className="neo-card-title font-mono">TASKS.DB</span>
+        <button
+          className="neo-add-task-btn"
+          onClick={() => setShowForm(!showForm)}
+          aria-label={showForm ? 'Close form' : 'Add task'}
+        >
+          {showForm ? '✕ CANCEL' : '+ ADD TASK'}
         </button>
       </div>
 
-      {showForm && (
-        <form onSubmit={handleAdd} className="tl-form">
-          <input
-            type="text"
-            placeholder="Task title..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            autoFocus
-            className="tl-input"
-          />
-          <input
-            type="text"
-            placeholder="Description (optional)"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="tl-input tl-input-sm"
-          />
-          <div className="tl-form-row">
-            <div className="tl-priority-group">
-              {['low', 'medium', 'high'].map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  className={`tl-priority-btn ${priority === p ? 'active' : ''} tl-priority-${p}`}
-                  onClick={() => setPriority(p)}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
-            <button type="submit" className="tl-submit" disabled={loading}>
-              {loading ? '...' : 'Add'}
-            </button>
+      <div className="neo-tasks-body">
+        {/* Date Row & Counter */}
+        <div className="neo-tasks-meta-row">
+          <div className="neo-date-badge font-mono">
+            <span>📅</span> {formatDate(selectedDate)}
           </div>
-        </form>
-      )}
+          <div className="neo-task-count-badge font-mono">
+            {dayTasks.filter(t => t.completed).length} / {dayTasks.length} DONE
+          </div>
+        </div>
 
-      <div className="tl-list">
-        {dayTasks.length === 0 ? (
-          <div className="tl-empty">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.3">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
-            </svg>
-            <p>No tasks for this day</p>
-            <span>Tap + to add one</span>
-          </div>
-        ) : (
-          dayTasks.map((task) => (
-            <div key={task._id} className={`tl-item ${task.completed ? 'tl-item-done' : ''}`}>
-              <button
-                className={`tl-check ${task.completed ? 'tl-check-done' : ''}`}
-                onClick={() => toggleComplete(task)}
-                aria-label={task.completed ? 'Mark incomplete' : 'Mark complete'}
-              >
-                {task.completed && (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-                )}
-              </button>
-              <div className="tl-content">
-                <div className="tl-title-row">
-                  <span className="tl-title">{task.title}</span>
-                  <span className="tl-priority-tag">{priorityIcon(task.priority)}</span>
-                </div>
-                {task.description && <p className="tl-desc">{task.description}</p>}
+        {/* Add Task Form (Fold-out neo card) */}
+        {showForm && (
+          <form onSubmit={handleAdd} className="neo-task-form">
+            <div className="neo-form-header font-mono">
+              <span>✦ NEW ASSIGNMENT / TASK</span>
+            </div>
+            <input
+              type="text"
+              placeholder="What needs to be done?..."
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              autoFocus
+              className="neo-form-input"
+            />
+            <input
+              type="text"
+              placeholder="Notes or description (optional)..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="neo-form-input neo-form-input-sub"
+            />
+            <div className="neo-form-footer">
+              <div className="neo-priority-selector">
+                {['low', 'medium', 'high'].map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    className={`neo-priority-chip ${priority === p ? 'active' : ''} chip-${p} font-mono`}
+                    onClick={() => setPriority(p)}
+                  >
+                    {p.toUpperCase()}
+                  </button>
+                ))}
               </div>
-              <button className="tl-delete" onClick={() => handleDelete(task._id)} aria-label="Delete task">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+              <button type="submit" className="neo-form-submit-btn font-mono" disabled={loading}>
+                {loading ? 'SAVING...' : 'SAVE ➔'}
               </button>
             </div>
-          ))
+          </form>
         )}
+
+        {/* Task List */}
+        <div className="neo-items-container">
+          {dayTasks.length === 0 ? (
+            <div className="neo-empty-tasks">
+              <div className="neo-empty-icon font-mono">★</div>
+              <p className="neo-empty-title">NO TASKS ON THIS DAY</p>
+              <span className="neo-empty-sub font-mono">Click "+ ADD TASK" to plan something</span>
+            </div>
+          ) : (
+            dayTasks.map((task) => (
+              <div
+                key={task._id}
+                className={`neo-task-item ${task.completed ? 'neo-item-completed' : ''}`}
+              >
+                {/* Checkbox button */}
+                <button
+                  type="button"
+                  className={`neo-checkbox ${task.completed ? 'checked' : ''}`}
+                  onClick={() => toggleComplete(task)}
+                  aria-label={task.completed ? 'Mark pending' : 'Mark completed'}
+                >
+                  {task.completed && <span className="neo-check-icon">✓</span>}
+                </button>
+
+                {/* Task Details */}
+                <div className="neo-task-content" onClick={() => toggleComplete(task)}>
+                  <div className="neo-task-top">
+                    <span className="neo-task-title">{task.title}</span>
+                    <span className={`neo-task-priority-badge ${priorityColors[task.priority]} font-mono`}>
+                      {task.priority.toUpperCase()}
+                    </span>
+                  </div>
+                  {task.description && (
+                    <p className="neo-task-desc">{task.description}</p>
+                  )}
+                </div>
+
+                {/* Delete button */}
+                <button
+                  type="button"
+                  className="neo-task-delete-btn"
+                  onClick={() => handleDelete(task._id)}
+                  aria-label="Delete task"
+                  title="Delete task"
+                >
+                  ✕
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

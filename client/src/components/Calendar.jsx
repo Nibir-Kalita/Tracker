@@ -24,7 +24,7 @@ export default function Calendar({ tasks, selectedDate, onDateSelect }) {
       days.push({ day: d, type: 'current', date: new Date(year, month, d) });
     }
 
-    // Next month days to fill the grid
+    // Next month days to fill grid
     const remaining = 42 - days.length;
     for (let d = 1; d <= remaining; d++) {
       days.push({ day: d, type: 'next', date: new Date(year, month + 1, d) });
@@ -56,56 +56,81 @@ export default function Calendar({ tasks, selectedDate, onDateSelect }) {
     onDateSelect(now.toISOString().split('T')[0]);
   };
 
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'];
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
 
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
   return (
-    <div className="calendar">
-      <div className="cal-header">
-        <button className="cal-nav" onClick={prevMonth} aria-label="Previous month">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <div className="cal-title">
-          <h3>{monthNames[month]} {year}</h3>
-          <button className="cal-today-btn" onClick={goToday}>Today</button>
+    <div className="neo-card neo-cal-card">
+      {/* Window Title Header */}
+      <div className="neo-card-header neo-cal-header-bar">
+        <div className="neo-window-dots">
+          <span className="neo-dot neo-dot-red"></span>
+          <span className="neo-dot neo-dot-yellow"></span>
+          <span className="neo-dot neo-dot-green"></span>
         </div>
-        <button className="cal-nav" onClick={nextMonth} aria-label="Next month">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
+        <span className="neo-card-title font-mono">CALENDAR.APP</span>
+        <button className="neo-today-pill font-mono" onClick={goToday}>TODAY</button>
       </div>
 
-      <div className="cal-weekdays">
-        {dayNames.map((d) => <div key={d} className="cal-weekday">{d}</div>)}
-      </div>
+      <div className="neo-cal-body">
+        {/* Month Navigation Row */}
+        <div className="neo-cal-month-nav">
+          <button className="neo-cal-nav-btn" onClick={prevMonth} aria-label="Previous month">
+            ◀
+          </button>
+          <div className="neo-cal-month-label">
+            <h3>{monthNames[month]} {year}</h3>
+          </div>
+          <button className="neo-cal-nav-btn" onClick={nextMonth} aria-label="Next month">
+            ▶
+          </button>
+        </div>
 
-      <div className="cal-grid">
-        {calendarDays.map((d, i) => {
-          const dateStr = d.date.toDateString();
-          const info = tasksByDate[dateStr];
-          const isToday = dateStr === today;
-          const isSelected = dateStr === selectedStr;
+        {/* Weekday Names */}
+        <div className="neo-cal-weekdays font-mono">
+          {dayNames.map((d) => (
+            <div key={d} className="neo-cal-weekday">{d}</div>
+          ))}
+        </div>
 
-          return (
-            <button
-              key={i}
-              className={`cal-day ${d.type !== 'current' ? 'cal-day-other' : ''} ${isToday ? 'cal-day-today' : ''} ${isSelected ? 'cal-day-selected' : ''}`}
-              onClick={() => onDateSelect(d.date.toISOString().split('T')[0])}
-            >
-              <span className="cal-day-num">{d.day}</span>
-              {info && (
-                <div className="cal-day-dots">
-                  {info.total > 0 && (
+        {/* Days Grid */}
+        <div className="neo-cal-grid">
+          {calendarDays.map((d, i) => {
+            const dateStr = d.date.toDateString();
+            const info = tasksByDate[dateStr];
+            const isToday = dateStr === today;
+            const isSelected = dateStr === selectedStr;
+
+            return (
+              <button
+                key={i}
+                type="button"
+                className={`neo-cal-cell ${d.type !== 'current' ? 'neo-cell-other' : ''} ${isToday ? 'neo-cell-today' : ''} ${isSelected ? 'neo-cell-selected' : ''}`}
+                onClick={() => onDateSelect(d.date.toISOString().split('T')[0])}
+              >
+                <span className="neo-cell-number font-mono">{d.day}</span>
+                {info && info.total > 0 && (
+                  <div className="neo-cell-indicators">
                     <span
-                      className={`cal-dot ${info.completed === info.total ? 'cal-dot-done' : info.hasPriority ? 'cal-dot-high' : 'cal-dot-pending'}`}
+                      className={`neo-cell-dot ${info.completed === info.total ? 'dot-done' : info.hasPriority ? 'dot-high' : 'dot-pending'}`}
                     ></span>
-                  )}
-                </div>
-              )}
-            </button>
-          );
-        })}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Legend */}
+        <div className="neo-cal-legend font-mono">
+          <span className="legend-item"><span className="legend-box dot-done"></span> DONE</span>
+          <span className="legend-item"><span className="legend-box dot-pending"></span> PENDING</span>
+          <span className="legend-item"><span className="legend-box dot-high"></span> HIGH PRIORITY</span>
+        </div>
       </div>
     </div>
   );

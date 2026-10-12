@@ -13,16 +13,37 @@ function AppContent() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'var(--bg)'
+        background: 'var(--bg-canvas)'
       }}>
         <div style={{
-          width: 32,
-          height: 32,
-          border: '3px solid var(--border)',
-          borderTopColor: 'var(--accent)',
-          borderRadius: '50%',
-          animation: 'spin 0.6s linear infinite'
-        }}></div>
+          padding: '16px 28px',
+          background: '#ffffff',
+          border: '3px solid #000000',
+          boxShadow: '6px 6px 0px #000000',
+          borderRadius: '12px',
+          fontWeight: 800,
+          fontFamily: "'Space Mono', monospace",
+          fontSize: '0.9rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <span style={{
+            display: 'inline-block',
+            width: '16px',
+            height: '16px',
+            background: 'var(--neo-yellow)',
+            border: '2px solid #000',
+            animation: 'neoSpin 1s infinite linear'
+          }}></span>
+          <span>LOADING SYSTEM...</span>
+        </div>
+        <style>{`
+          @keyframes neoSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
