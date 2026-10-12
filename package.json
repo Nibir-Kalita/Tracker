@@ -1,0 +1,16 @@
+{
+  "name": "student-tracker",
+  "version": "1.0.0",
+  "description": "Minimal Student Tracker with MERN Stack (Mobile PWA & 24/7 Server Ready)",
+  "scripts": {
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "build": "npm --prefix client install && npm --prefix client run build",
+    "start": "NODE_ENV=production node server/server.js",
+    "server": "npm --prefix server run dev",
+    "client": "npm --prefix client run dev",
+    "dev": "npm run server"
+  },
+  "keywords": ["mern", "student-tracker", "pwa", "productivity"],
+  "author": "Nibir Kalita",
+  "license": "ISC"
+}

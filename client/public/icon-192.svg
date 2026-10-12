@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="16" stdDeviation="24" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="#0f0f14" />
+  <rect x="56" y="56" width="400" height="400" rx="96" fill="url(#bgGrad)" filter="url(#shadow)" />
+  <!-- Calendar / Checkmark Minimal Artwork -->
+  <rect x="120" y="140" width="272" height="260" rx="36" fill="#ffffff" fill-opacity="0.95" />
+  <path d="M120 200h272" stroke="#6366f1" stroke-width="8" stroke-linecap="round" />
+  <circle cx="176" cy="140" r="14" fill="#6366f1" />
+  <circle cx="336" cy="140" r="14" fill="#6366f1" />
+  <!-- Checkmark -->
+  <path d="M190 290l45 45 95-95" fill="none" stroke="#6366f1" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
