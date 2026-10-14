@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tracker-pwa-v1';
+const CACHE_NAME = 'tracker-pwa-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -31,6 +31,15 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   // Let API requests go directly to network
   if (event.request.url.includes('/api/')) {
+    return;
+  }
+
+  // Always request the latest app shell after a deploy. Cached HTML can point
+  // at hashed JS/CSS files from an older build and leave the page blank.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/'))
+    );
     return;
   }
 
