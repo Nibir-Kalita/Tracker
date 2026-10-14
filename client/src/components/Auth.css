@@ -201,6 +201,29 @@
   gap: 18px;
 }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 14px;
+  color: var(--text-muted);
+  font: 700 0.7rem 'Space Mono', monospace;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  height: 2px;
+  flex: 1;
+  background: #000;
+}
+
+.google-signin {
+  display: flex;
+  justify-content: center;
+  min-height: 42px;
+}
+
 .neo-field {
   display: flex;
   flex-direction: column;

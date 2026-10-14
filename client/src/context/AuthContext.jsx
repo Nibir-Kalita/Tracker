@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const AuthContext = createContext(null);
 
@@ -17,12 +17,12 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  const loginUser = (userData, authToken) => {
+  const loginUser = useCallback((userData, authToken) => {
     setUser(userData);
     setToken(authToken);
     localStorage.setItem('token', authToken);
     localStorage.setItem('user', JSON.stringify(userData));
-  };
+  }, []);
 
   const logout = () => {
     setUser(null);

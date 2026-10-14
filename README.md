@@ -54,6 +54,20 @@ Tracker/
 
 ## 🚀 Quick Start (Local Development)
 
+### Google sign-in setup
+
+The current mobile target is the installable PWA. Google sign-in uses Google Identity Services in the browser; the API verifies the ID token and creates or finds the MongoDB user before returning the app's JWT.
+
+1. In Google Cloud Console, configure the OAuth consent screen and create an OAuth client ID with application type **Web application**.
+2. Add `http://localhost:5173` and your deployed HTTPS app origin to **Authorized JavaScript origins**. For phone testing, use the deployed HTTPS origin; Google sign-in is not available from an arbitrary local network HTTP address.
+3. Copy `client/.env.example` to `client/.env` and set `VITE_GOOGLE_CLIENT_ID` to that client ID.
+4. Copy `server/.env.example` to `server/.env` and set `GOOGLE_CLIENT_ID` to the same ID, along with your MongoDB URI and a private random `JWT_SECRET`.
+5. Restart/rebuild the Vite client after changing its environment file. Keep OAuth client IDs and API secrets in deployment environment settings; never add `.env` files to git.
+
+Google users are stored in MongoDB with their verified email and Google subject ID. Existing accounts with that email are linked on first Google sign-in; their tasks stay attached to the same user record. Password login and registration continue to work.
+
+For a native Android/iOS app (rather than this PWA), use the platform Google Sign-In SDK and send its ID token to the same `/api/auth/google` endpoint. Configure the corresponding Android/iOS OAuth clients and update the server to accept those client IDs as valid audiences.
+
 ### 1. Start MongoDB (via Docker)
 ```bash
 docker run -d --name student-tracker-mongo -p 27017:27017 -v mongo_data:/data/db mongo:latest

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { login, register } from '../api';
+import { googleLogin, login, register } from '../api';
 import './Auth.css';
 
 export default function Auth() {
@@ -9,7 +9,45 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const googleButtonRef = useRef(null);
   const { loginUser } = useAuth();
+
+  useEffect(() => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId) return;
+
+    let cancelled = false;
+    const renderGoogleButton = () => {
+      if (cancelled || !window.google?.accounts?.id || !googleButtonRef.current) return false;
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async ({ credential }) => {
+          setError('');
+          setLoading(true);
+          try {
+            const res = await googleLogin(credential);
+            loginUser(res.data.user, res.data.token);
+          } catch (err) {
+            setError(err.response?.data?.message || 'Google sign-in failed');
+          } finally {
+            setLoading(false);
+          }
+        }
+      });
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline', size: 'large', shape: 'rectangular', text: 'continue_with', width: 340
+      });
+      return true;
+    };
+
+    if (!renderGoogleButton()) {
+      const timer = window.setInterval(() => {
+        if (renderGoogleButton()) window.clearInterval(timer);
+      }, 150);
+      return () => { cancelled = true; window.clearInterval(timer); };
+    }
+    return () => { cancelled = true; };
+  }, [loginUser]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -125,6 +163,13 @@ export default function Auth() {
               )}
             </button>
           </form>
+
+          {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+            <>
+              <div className="auth-divider"><span>OR</span></div>
+              <div className="google-signin" ref={googleButtonRef} />
+            </>
+          )}
 
           {/* Footer badge */}
           <div className="auth-footer-note font-mono">

@@ -38,6 +38,9 @@ export const register = (name, password) =>
 export const login = (name, password) =>
   api.post('/auth/login', { name, password });
 
+export const googleLogin = (credential) =>
+  api.post('/auth/google', { credential });
+
 // Tasks
 export const getTasks = (params) =>
   api.get('/tasks', { params });
