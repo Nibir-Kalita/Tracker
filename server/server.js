@@ -39,18 +39,33 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Connect to MongoDB and start server
+// Connect once per serverless instance. Vercel invokes the exported handler;
+// local and container deployments still start a normal HTTP server.
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/student-tracker';
 
-mongoose.connect(MONGODB_URI)
+const databaseReady = mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log('✅ Connected to MongoDB');
+  });
+
+if (process.env.VERCEL) {
+  module.exports = async (req, res) => {
+    try {
+      await databaseReady;
+      return app(req, res);
+    } catch (err) {
+      console.error('❌ MongoDB connection error:', err.message);
+      return res.status(503).json({ message: 'Database connection unavailable' });
+    }
+  };
+} else {
+  databaseReady.then(() => {
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
-  })
-  .catch((err) => {
+  }).catch((err) => {
     console.error('❌ MongoDB connection error:', err.message);
     process.exit(1);
   });
+}
